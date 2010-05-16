@@ -114,6 +114,30 @@ Example: Using `{{variable}}` inside a template for `5 > 2` will
 result in `5 &gt; 2`, where as the usage of `{{{variable}}}` will
 result in `5 > 2`.
 
+Section Separators
+------------------
+
+It is possible to define a section separator to use when
+processing arrays of elements.  This is useful when you want
+to ensure the separator does not appear after the last element.
+
+The section separators must be named after the section they belong
+to and follow the convention: section_name + '_separator'.
+
+Example:
+
+Given this template
+  * {{#names}}{{to_s}}{{#names_separator}}, {{/names_separator}}{{/names}}
+
+And and a context: {names => [:jim, :alice, :ron]}
+
+The result is:
+  * jim, alice, ron
+
+This has been implemented in the sprit of:
+  Special Markers
+    http://google-ctemplate.googlecode.com/svn/trunk/doc/reference.html
+
 
 Dict-Style Views
 ----------------
