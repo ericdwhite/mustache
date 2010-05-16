@@ -97,6 +97,9 @@ class Mustache
 
       # Compile the Ruby for this section now that we know what's
       # inside the section.
+      #
+      # Note, the context may hold a separator inserted by child
+      # :section_separator elements.
       ev(<<-compiled)
       if v = ctx[#{name.to_sym.inspect}]
         if v == true
@@ -105,10 +108,41 @@ class Mustache
           v.call(#{code})
         else
           v = [v] unless v.is_a?(Array) # shortcut when passed non-array
-          v.map { |h| ctx.push(h); r = #{code}; ctx.pop; r }.join
+          items = v.map { |h| ctx.push(h); r = #{code}; ctx.pop; r }
+          
+          separator = ctx.fetch(#{Parser.separator_for(name).to_sym.inspect}, nil)
+          if separator
+            ctx.pop
+            items.join(separator[:code])
+          else
+            items.join
+          end
         end
       end
       compiled
+    end
+
+    def on_section_separator(name, content)
+      # Convert the tokenized content of this section separator
+      # into a Ruby string we can use.
+      code = compile(content)
+
+      # Insert the section separator ahead of its parent
+      # to make the separator content available for the section
+      # joins.
+      #
+      # At this point the context will contain values from the 
+      # array and will be executed once for each element, thus 
+      # we need to ensure the separator is not added more then
+      # once.
+      return ev(<<-compiled)
+        unless ctx.fetch(#{name.to_sym.inspect}, nil) then
+          parent = ctx.pop
+          ctx[#{name.to_sym.inspect}] = {:code => #{code}}
+          ctx.push(parent)
+          ''
+        end
+        compiled
     end
 
     # Fired when we find an inverted section. Just like `on_section`,

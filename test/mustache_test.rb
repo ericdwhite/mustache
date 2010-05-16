@@ -473,4 +473,19 @@ template
       assert_equal value, tmpl.send(attr)
     end
   end
+
+  # See: Special Markers
+  #   http://google-ctemplate.googlecode.com/svn/trunk/doc/reference.html
+  def test_separator
+    expected = <<-data
+
+Gem Names:
+* mustache - sinatra - rack
+* mustache, sinatra, rack
+data
+    template = File.read(File.dirname(__FILE__) + "/fixtures/separator.mustache")
+    assert_equal expected, Mustache.render(template, 
+                                           :names => [ :mustache, :sinatra, :rack],
+                                           :separator => " - ")
+  end
 end

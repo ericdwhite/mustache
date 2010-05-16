@@ -1,0 +1,4 @@
+{{! comments can be used to prevent newlines from being eaten }}
+Gem Names:
+* {{#names}}{{to_s}}{{#names_separator}}{{separator}}{{/names_separator}}{{/names}}{{! hack}}
+* {{#names}}{{to_s}}{{#names_separator}}, {{/names_separator}}{{/names}}{{! hack}}

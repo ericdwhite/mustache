@@ -54,6 +54,10 @@ EOF
     # the rest only allow ALLOWED_CONTENT.
     ANY_CONTENT = [ '!', '=' ]
 
+    # Separator postfix used to mark sections as
+    # separators.
+    SEPARATOR_TOKEN_POSTFIX = "_separator"
+
     attr_reader :scanner, :result
     attr_writer :otag, :ctag
 
@@ -128,7 +132,11 @@ EOF
       case type
       when '#'
         block = [:multi]
-        @result << [:mustache, :section, content, block]
+        if content =~ /.*#{SEPARATOR_TOKEN_POSTFIX}$/
+          @result << [:mustache, :section_separator, content, block]
+        else
+          @result << [:mustache, :section, content, block]
+        end
         @sections << [content, position, @result]
         @result = block
       when '^'
@@ -225,6 +233,10 @@ EOF
     # handled for you.
     def error(message, pos = position)
       raise SyntaxError.new(message, pos)
+    end
+
+    def Parser.separator_for(name)
+      name + SEPARATOR_TOKEN_POSTFIX
     end
   end
 end
