@@ -127,12 +127,16 @@ to and follow the convention: section_name + '_separator'.
 Example:
 
 Given this template
-  * {{#names}}{{to_s}}{{#names_separator}}, {{/names_separator}}{{/names}}
 
-And and a context: {names => [:jim, :alice, :ron]}
+    * {{#names}}{{to_s}}{{#names_separator}}, {{/names_separator}}{{/names}}
 
-The result is:
-  * jim, alice, ron
+And and a context
+
+    {names => [:jim, :alice, :ron]}
+
+The result is
+
+    * jim, alice, ron
 
 This has been implemented in the sprit of:
   Special Markers
